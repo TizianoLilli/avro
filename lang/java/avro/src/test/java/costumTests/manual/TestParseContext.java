@@ -44,11 +44,12 @@ public class TestParseContext {
     }
   }
 
-  //combinazione (name = simple, namespace = null)
+  //combinazione (name = simple, namespace = null, presence = yes)
   @Test
   public void TestFindSimpleNameNull(){
 
     Mockito.when(schema.getType()).thenReturn(Schema.Type.RECORD);
+    // se il namespace è null getFullName() mi restituisce solo il name
     Mockito.when(schema.getFullName()).thenReturn("simple");
 
     ctx.put(schema);
@@ -57,9 +58,9 @@ public class TestParseContext {
     Assert.assertSame(schema, result);
   }
 
-  //combinazione (name = simple, namespace = not "")
+  //combinazione (name = simple, namespace = not "", presence = yes)
   @Test
-  public void TestFindSimpleNameNotEmpty(){
+  public void TestFindSimpleNameNotEmptyPresent(){
 
     Mockito.when(schema.getType()).thenReturn(Schema.Type.RECORD);
     Mockito.when(schema.getFullName()).thenReturn("explicit.simple");
@@ -87,17 +88,24 @@ public class TestParseContext {
   @Test
   public void TestFindSimpleNameEmptyPresent(){
 
+    // se namespace = "", getFullName() mi restituisce solo name
     Mockito.when(schema.getType()).thenReturn(Schema.Type.RECORD);
-    Mockito.when(schema.getFullName()).thenReturn(".simple");
+    Mockito.when(schema.getFullName()).thenReturn("simple");
 
+    // in questo caso c'è un doppio controllo perché se scrivessi
+    // Mockito.when(schema.getFullName()).thenReturn(".simple") avrei che
     // durante l'esecuzione di put() vengono invocate requireValidFullName() e validateName();
-    // quest'ultima lancia una SchemaParseException se inserisco uno schema con namespace = "",
-    // quindi non ha senso fare find() dopo
-    Assert.assertThrows(SchemaParseException.class, () -> ctx.put(schema));
+    // quest'ultima lancia una SchemaParseException: Namespace part "" is invalid: Empty name,
+
+    ctx.put(schema);
+    Schema result = ctx.find("simple", "");
+
+    Assert.assertSame(schema, result);
+
   }
 
   @Test
-  public void TestFindFullyQualifiedNameInSchemas(){
+  public void TestFindFullyQualifiedNamePresent(){
 
     Mockito.when(schema.getType()).thenReturn(Schema.Type.RECORD);
     Mockito.when(schema.getFullName()).thenReturn("a.full.Name");
@@ -112,7 +120,7 @@ public class TestParseContext {
   }
 
   @Test
-  public void TestFindFullyQualifiedNameNotInSchemas() {
+  public void TestFindFullyQualifiedNameAbsent() {
 
     try (MockedStatic<SchemaResolver> mocked = Mockito.mockStatic(SchemaResolver.class)){
 
@@ -140,36 +148,55 @@ public class TestParseContext {
     }
   }
 
-  //combinazione (name = "", namespace = null, presence = yes)
+  /*@Test
+  public void prova3(){
+
+    Schema s = Schema.createRecord("explicit", null, "", false);
+    System.out.println("this is full name: " + s.getFullName());
+
+  }*/
+
+  //combinazione (name = "", namespace = not "", presence = no)
   @Test
-  public void TestFindEmptyNameNullPresent(){
+  public void TestFindEmptyNameNotEmptyAbsent(){
 
-    Mockito.when(schema.getType()).thenReturn(Schema.Type.RECORD);
-    Mockito.when(schema.getFullName()).thenReturn("");
+    try (MockedStatic<SchemaResolver> mocked = Mockito.mockStatic(SchemaResolver.class)){
 
-    //mi genera una SchemaParseException: Name "" is invalid: Empty name, quando prova a validare il nome
-    //allora non ha senso fare find()
-    Assert.assertThrows(SchemaParseException.class, () -> ctx.put(schema));
+      mocked.when(() -> SchemaResolver.unresolvedSchema("explicit.")).thenReturn(schema);
+      Schema result = ctx.find("", "explicit");
+
+      Assert.assertSame(schema, result);
+
+      mocked.verify(() -> SchemaResolver.unresolvedSchema("explicit."));
+    }
+  }
+
+  //combinazione (name = "", namespace = "", presence = no)
+  @Test
+  public void TestFindEmptyNameEmptyAbsent(){
+
+    try (MockedStatic<SchemaResolver> mocked = Mockito.mockStatic(SchemaResolver.class)){
+
+      mocked.when(() -> SchemaResolver.unresolvedSchema(".")).thenReturn(schema);
+      Schema result = ctx.find("", "");
+
+      Assert.assertSame(schema, result);
+
+      mocked.verify(() -> SchemaResolver.unresolvedSchema("."));
+    }
   }
 
   /*@Test
-  public void TestFindEmptyName(){
+  public void prova(){
+    Schema s = ctx.find("ciao","ciao");
+    ctx.put(s);
+    ctx.commit();
+    ctx.resolveAllSchemas();
 
-    Mockito.when(schema.getType()).thenReturn(Schema.Type.RECORD);
-    Mockito.when(schema.getFullName()).thenReturn("");
-
-    //mi genera una SchemaParseException: Name "" is invalid: Empty name, quando prova a validare il nome
-    //allora non ha senso vedere la combinazione (presence = yes, FullName = "")
-    ctx.put(schema);
-
-    Schema result = ctx.find("", null);
-
-    Assert.assertSame(schema, result);
   }*/
 
   @Test
   public void TestPutUnnamedSchema(){
-    //Schema schema = mock(Schema.class);
     Mockito.when(schema.getType()).thenReturn(Schema.Type.STRING);
 
     //in ctx posso mettere solo schemi named, altrimenti viene lanciata un'eccezione
