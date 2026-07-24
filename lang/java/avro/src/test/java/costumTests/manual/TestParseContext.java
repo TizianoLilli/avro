@@ -13,6 +13,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import javax.inject.Qualifier;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
@@ -191,9 +193,23 @@ public class TestParseContext {
     Schema s = ctx.find("ciao","ciao");
     ctx.put(s);
     ctx.commit();
-    ctx.resolveAllSchemas();
+    ctx.resolve(s);
 
   }*/
+
+  @Test
+  public void prova2(){
+    List<Schema.Field> fields = new ArrayList<>();
+    Schema s = Schema.createRecord("explicit", null, "explicit", false, fields);
+    //ctx.put(s);
+    ctx.commit();
+    ctx.resolve(s);
+
+    /*Schema rec = Schema.createRecord("name", null, "", false, fields);
+    Schema s = Schema.createArray(rec);
+    ctx.resolve(s);
+*/
+  }
 
   @Test
   public void TestPutUnnamedSchema(){
@@ -247,5 +263,79 @@ public class TestParseContext {
                 ctx.put(s);
         }
     );
+  }
+
+  @Test
+  public void TestResolveNamedKnown(){
+    List<Schema.Field> fields = new ArrayList<>();
+    Schema res = Schema.createRecord("simple", null, "explicit", false, fields);
+
+    Schema s = ctx.find("simple","explicit");
+    ctx.put(s);
+    ctx.put(res);
+    ctx.commit();
+    ctx.resolve(s);
+  }
+
+  @Test
+  public void TestResolveNamedUnknown(){
+    Schema result = ctx.find("simple","explicit");
+
+    // otterrei un NullPointerException: Unknown schema: org.apache.avro.compiler.UnresolvedSchema_0
+    Assert.assertThrows(NullPointerException.class, () -> ctx.resolve(result));
+  }
+
+  @Test
+  public void TestResolveNamedUnresolvable(){
+    Schema result = ctx.find("simple","explicit");
+    ctx.put(result);
+    ctx.commit();
+
+    // otterrei un messaggio del tipo Undefined schema: explicit.simple
+    // perché non è presente nel contesto l'istanza risolta dello stesso schema
+    // (in altre parole ho il placeholder ma non lo schema referenced da sostituire);
+    Assert.assertThrows(AvroTypeException.class, () -> ctx.resolve(result));
+  }
+
+  @Test
+  public void TestResolveUnnamed(){
+    Schema result = ctx.find("string", null);
+
+    // nel caso unnamed non posso usare put(); otterrei una AvroTypeException: "You can only put a named schema into
+    // the context"
+    ctx.resolve(result);
+  }
+
+  @Test
+  public void TestResolveNotAllCommitted(){
+
+    try (MockedStatic<SchemaResolver> mocked = Mockito.mockStatic(SchemaResolver.class)){
+
+      mocked.when(() -> SchemaResolver.unresolvedSchema("explicit.simple")).thenReturn(schema);
+      Schema uncommitted = ctx.find("simple","explicit");
+
+      Mockito.when(schema.getType()).thenReturn(Schema.Type.RECORD); //VEDI SE POSSO EVITARE LA ENUM (MAGARI CON UN MOCK)
+
+      Mockito.when(schema.getFullName()).thenReturn("????");
+
+      ctx.put(uncommitted);
+
+      Schema result = ctx.find("string", null);
+      Assert.assertThrows(IllegalStateException.class, () -> ctx.resolve(result));
+
+      mocked.verify(() -> SchemaResolver.unresolvedSchema("."));
+    }
+  }
+
+  @Test
+  public void TestResolveNotAllResolved(){
+    Schema unresolved = ctx.find("simple","explicit");
+    ctx.put(unresolved);
+    ctx.commit();
+
+    Schema result = ctx.find("string", null);
+
+    // viene lanciata una AvroTypeException: Undefined schema: explicit.simple
+    Assert.assertThrows(AvroTypeException.class, () -> ctx.resolve(result));
   }
 }
