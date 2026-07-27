@@ -280,7 +280,32 @@ public class ParseContextUnitTest {
   }
 
   @Test
-  public void TestResolveNamedKnown(){
+  public void TestPutInvalidName(){
+
+    Schema schema =
+        Schema.createRecord(
+            "invalid",
+            null,
+            null,
+            false,
+            Collections.emptyList());
+
+    NameValidator.Result error = Mockito.mock(NameValidator.Result.class);
+
+    // visto che posso passare un validator arbitrario a ParseContext questo può decidere di non validare una stringa
+    // ritenuta valida durante l'istanziazione dello schema (createRecord fa già un controllo sul nome durante la
+    // creazione). L'unico metodo di ParseContext che usa validate() è put()
+    Mockito.when(validator.validate(Mockito.anyString())).thenReturn(error);
+    Mockito.when(error.isOK()).thenReturn(false);
+    Mockito.when(error.getErrors()).thenReturn("Invalid name");
+
+    Assert.assertThrows(
+        SchemaParseException.class,
+        () -> ctx.put(schema));
+  }
+
+  @Test
+  public void TestResolveKnown(){
 
     Schema schema =
         Schema.createRecord(
@@ -318,27 +343,18 @@ public class ParseContextUnitTest {
   }
 
   @Test
-  public void TestResolveNamedUnknown(){
+  public void TestResolveUnknown(){
 
-    Schema unresolved = ctx.find("simple","explicit");
+    Schema schema =
+        Schema.createRecord(
+            "simple",
+            null,
+            "explicit",
+            false,
+            Collections.emptyList());
 
-    Assert.assertTrue(SchemaResolver.isUnresolvedSchema(unresolved));
-    Assert.assertEquals("explicit.simple",
-        SchemaResolver.getUnresolvedSchemaName(unresolved));
-
-    // otterrei un NullPointerException: Unknown schema: org.apache.avro.compiler.UnresolvedSchema_0
-    // non essendo presente nel contesto
-    Assert.assertThrows(NullPointerException.class, () -> ctx.resolve(unresolved));
-  }
-
-  @Test
-  public void TestResolveNamedUnresolvable(){
-
-    Schema unresolved = ctx.find("simple","explicit");
-
-    Assert.assertTrue(SchemaResolver.isUnresolvedSchema(unresolved));
-    Assert.assertEquals("explicit.simple",
-        SchemaResolver.getUnresolvedSchemaName(unresolved));
+    Mockito.when(validator.validate("simple")).thenReturn(ok);
+    Mockito.when(validator.validate("explicit")).thenReturn(ok);
 
     Mockito.when(validator.validate("org")).thenReturn(ok);
     Mockito.when(validator.validate("apache")).thenReturn(ok);
@@ -348,29 +364,22 @@ public class ParseContextUnitTest {
 
     Mockito.when(ok.isOK()).thenReturn(true);
 
-    ctx.put(unresolved);
+    Schema unresolved = ctx.find("simple","explicit");
+
+    Assert.assertTrue(SchemaResolver.isUnresolvedSchema(unresolved));
+    Assert.assertEquals("explicit.simple",
+        SchemaResolver.getUnresolvedSchemaName(unresolved));
+
+    ctx.put(schema);
     ctx.commit();
 
-    // otterrei un messaggio del tipo Undefined schema: explicit.simple
-    // perché non è presente nel contesto l'istanza risolta dello stesso schema
-    // (in altre parole ho il placeholder ma non lo schema referenced da sostituire);
-    Assert.assertThrows(AvroTypeException.class, () -> ctx.resolve(unresolved));
+    // otterrei un NullPointerException: Unknown schema: explicit.simple
+    // non essendo presente nel contesto questo stesso schema unresolved (e non la sua resolved reference!)
+    Assert.assertThrows(NullPointerException.class, () -> ctx.resolve(unresolved));
   }
 
   @Test
-  public void TestResolveUnnamed(){
-
-    Schema unresolved = ctx.find("string", null);
-
-    // nel caso unnamed non posso usare put(); otterrei una AvroTypeException: "You can only put a named schema into
-    // the context"
-    Schema resolved = ctx.resolve(unresolved);
-
-    Assert.assertEquals(unresolved, resolved);
-  }
-
-  @Test
-  public void TestResolveNotAllCommitted(){
+  public void TestResolveNotFullyCommitted(){
 
     Schema uncommitted = ctx.find("simple","explicit");
 
