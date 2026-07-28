@@ -241,7 +241,7 @@ public class ParseContextUnitTest {
 
     NameValidator.Result error = Mockito.mock(NameValidator.Result.class);
 
-    // visto che posso passare un validator arbitrario a ParseContext questo può
+    // Visto che posso passare un validator arbitrario a ParseContext questo può
     // decidere di non validare una stringa
     // ritenuta valida durante l'istanziazione dello schema (createRecord fa già un
     // controllo sul nome durante la
