@@ -27,6 +27,7 @@ jobs:
              -DskipTests
              -Drat.skip=true
 
+
       - name: Run custom tests
         run: mvn -B -Dtest=customTests.manual.ParseContextUnitTest test
              #mvn -B -Dtest="customTests.**.*" test
