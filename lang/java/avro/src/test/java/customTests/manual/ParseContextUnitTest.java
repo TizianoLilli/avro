@@ -1,4 +1,4 @@
-package costumTests.manual;
+package customTests.manual;
 
 import org.apache.avro.*;
 import org.apache.avro.util.SchemaResolver;
