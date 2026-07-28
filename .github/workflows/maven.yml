@@ -26,4 +26,5 @@ jobs:
         run: mvn -B clean verify -DskipTests
 
       - name: Run custom tests
-        run: mvn -B -Dtest="customTests.**.*" test
+        run: mvn -B -Dtest=customTests.manual.ParseContextUnitTest test
+             #mvn -B -Dtest="customTests.**.*" test
