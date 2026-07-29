@@ -34,6 +34,7 @@ public class ParseContextUnitTest {
     ctx = new ParseContext(validator);
   }
 
+  // TF01: combinazione (name = primitive, namespace = -, schema presence = -)
   @Test
   public void TestFindPrimitiveName() {
 
@@ -44,7 +45,7 @@ public class ParseContextUnitTest {
     Assert.assertEquals(schema, result);
   }
 
-  // combinazione (name = simple, namespace = null, presence = yes)
+  // TF02: combinazione (name = simple, namespace = null, schema presence = yes)
   @Test
   public void TestFindSimpleNameNull() {
 
@@ -61,7 +62,7 @@ public class ParseContextUnitTest {
     Assert.assertSame(schema, result);
   }
 
-  // combinazione (name = simple, namespace = not "", presence = yes)
+  // TF03: combinazione (name = simple, namespace = not "", schema presence = yes)
   @Test
   public void TestFindSimpleNameNotEmptyPresent() {
 
@@ -78,7 +79,7 @@ public class ParseContextUnitTest {
     Assert.assertSame(schema, result);
   }
 
-  // combinazione (name = simple, namespace = "", presence = no)
+  // TF04: combinazione (name = simple, namespace = "", schema presence = no)
   @Test
   public void TestFindSimpleNameEmptyAbsent() {
 
@@ -88,7 +89,7 @@ public class ParseContextUnitTest {
     Assert.assertEquals(".simple", SchemaResolver.getUnresolvedSchemaName(schema));
   }
 
-  // combinazione (name = simple, namespace = "", presence = yes)
+  // TF05: combinazione (name = simple, namespace = "", schema presence = yes)
   @Test
   public void TestFindSimpleNameEmptyPresent() {
 
@@ -106,6 +107,8 @@ public class ParseContextUnitTest {
 
   }
 
+  // TF06: combinazione (name = fully qualified, namespace = -, schema presence =
+  // yes)
   @Test
   public void TestFindFullyQualifiedNamePresent() {
 
@@ -126,6 +129,8 @@ public class ParseContextUnitTest {
     Assert.assertSame(schema, result);
   }
 
+  // TF07: combinazione (name = fully qualified, namespace = -, schema presence =
+  // no)
   @Test
   public void TestFindFullyQualifiedNameAbsent() {
 
@@ -136,7 +141,7 @@ public class ParseContextUnitTest {
 
   }
 
-  // combinazione (name = "", namespace = null, presence = no)
+  // TF08: combinazione (name = "", namespace = null, schema presence = no)
   @Test
   public void TestFindEmptyNameNullAbsent() {
 
@@ -147,7 +152,7 @@ public class ParseContextUnitTest {
 
   }
 
-  // combinazione (name = "", namespace = not "", presence = no)
+  // TF09: combinazione (name = "", namespace = not "", schema presence = no)
   @Test
   public void TestFindEmptyNameNotEmptyAbsent() {
 
@@ -157,7 +162,7 @@ public class ParseContextUnitTest {
     Assert.assertEquals("explicit.", SchemaResolver.getUnresolvedSchemaName(schema));
   }
 
-  // combinazione (name = "", namespace = "", presence = no)
+  // TF10: combinazione (name = "", namespace = "", presence = no)
   @Test
   public void TestFindEmptyNameEmptyAbsent() {
 
@@ -168,6 +173,7 @@ public class ParseContextUnitTest {
 
   }
 
+  // TP01: combinazione (schema = unnamed, presence = -, validator = -)
   @Test
   public void TestPutUnnamedSchema() {
 
@@ -178,6 +184,7 @@ public class ParseContextUnitTest {
     Assert.assertThrows(AvroTypeException.class, () -> ctx.put(schema));
   }
 
+  // TP02: combinazione (schema = named, presence = absent, validator = valid)
   @Test
   public void TestPutNamedSchemaIfNotExisting() {
 
@@ -194,7 +201,8 @@ public class ParseContextUnitTest {
     Assert.assertSame(schema, result);
   }
 
-  // combinazione (schema = named, presence = same name same schema)
+  // TP03: combinazione (schema = named, presence = same name same schema,
+  // validator = valid)
   @Test
   public void TestPutNamedSchemaIfExistingSame() {
 
@@ -215,7 +223,8 @@ public class ParseContextUnitTest {
 
   }
 
-  // combinazione (schema = named, presence = same name different schema)
+  // TP04: combinazione (schema = named, presence = same name different schema,
+  // validator = valid)
   @Test
   public void TestPutNamedSchemaIfExistingDifferent() {
 
@@ -234,10 +243,11 @@ public class ParseContextUnitTest {
     });
   }
 
+  // TP05: combinazione (schema = named, presence = -, validator = invalid)
   @Test
   public void TestPutInvalidName() {
 
-    Schema schema = Schema.createRecord("invalid", null, null, false, Collections.emptyList());
+    Schema schema = Schema.createRecord("lunedì", null, null, false, Collections.emptyList());
 
     NameValidator.Result error = Mockito.mock(NameValidator.Result.class);
 
@@ -246,13 +256,15 @@ public class ParseContextUnitTest {
     // ritenuta valida durante l'istanziazione dello schema (createRecord fa già un
     // controllo sul nome durante la
     // creazione). L'unico metodo di ParseContext che usa validate() è put()
-    Mockito.when(validator.validate(Mockito.anyString())).thenReturn(error);
+    Mockito.when(validator.validate("lunedì")).thenReturn(error);
     Mockito.when(error.isOK()).thenReturn(false);
     Mockito.when(error.getErrors()).thenReturn("Invalid name");
 
     Assert.assertThrows(SchemaParseException.class, () -> ctx.put(schema));
   }
 
+  // TR01: combinazione (schema = known, resolved schemas = all, context =
+  // committed)
   @Test
   public void TestResolveKnown() {
 
@@ -285,6 +297,8 @@ public class ParseContextUnitTest {
     Assert.assertEquals(schema, resolved);
   }
 
+  // TR02: combinazione (schema = unknown, resolved schemas = all, context =
+  // committed)
   @Test
   public void TestResolveUnknown() {
 
@@ -315,6 +329,7 @@ public class ParseContextUnitTest {
     Assert.assertThrows(NullPointerException.class, () -> ctx.resolve(unresolved));
   }
 
+  // TR03: combinazione (schema = -, resolved schemas = -, context = uncommitted)
   @Test
   public void TestResolveNotFullyCommitted() {
 
@@ -333,10 +348,17 @@ public class ParseContextUnitTest {
 
     ctx.put(uncommitted);
 
+    // per prima cosa resolve() verifica se tutti gli schemi nel contesto sono
+    // committed,
+    // poi se sono risolti e solo infine verifica se lo schema che riceve come
+    // parametro è risolvibile
+
     Schema unresolved = ctx.find("string", null);
     Assert.assertThrows(IllegalStateException.class, () -> ctx.resolve(unresolved));
   }
 
+  // TR04: combinazione (schema = -, resolved schema = not all, context =
+  // committed)
   @Test
   public void TestResolveNotAllResolved() {
     Schema unresolved = ctx.find("simple", "explicit");

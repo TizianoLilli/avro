@@ -1,6 +1,7 @@
 package customTests.manual;
 
 import org.apache.avro.AvroTypeException;
+import org.apache.avro.NameValidator;
 import org.apache.avro.ParseContext;
 import org.apache.avro.Schema;
 import org.apache.avro.SchemaParseException;
@@ -21,7 +22,7 @@ public class ParseContextIntegrationTest {
     ctx = new ParseContext();
   }
 
-  // combinazione (name = simple, namespace = null, presence = yes)
+  // TF02: combinazione (name = simple, namespace = null, schema presence = yes)
   @Test
   public void TestFindSimpleNameNull() {
 
@@ -35,7 +36,7 @@ public class ParseContextIntegrationTest {
     Assert.assertSame(schema, result);
   }
 
-  // combinazione (name = simple, namespace = not "", presence = yes)
+  // TF03: combinazione (name = simple, namespace = not "", schema presence = yes)
   @Test
   public void TestFindSimpleNameNotEmptyPresent() {
 
@@ -47,7 +48,7 @@ public class ParseContextIntegrationTest {
     Assert.assertSame(schema, result);
   }
 
-  // combinazione (name = simple, namespace = "", presence = yes)
+  // TF05: combinazione (name = simple, namespace = "", schema presence = yes)
   @Test
   public void TestFindSimpleNameEmptyPresent() {
 
@@ -62,6 +63,8 @@ public class ParseContextIntegrationTest {
 
   }
 
+  // TF06: combinazione (name = fully qualified, namespace = -, schema presence =
+  // yes)
   @Test
   public void TestFindFullyQualifiedNamePresent() {
 
@@ -77,6 +80,7 @@ public class ParseContextIntegrationTest {
     Assert.assertSame(schema, result);
   }
 
+  // TP02: combinazione (schema = named, presence = absent, validator = valid)
   @Test
   public void TestPutNamedSchemaIfNotExisting() {
 
@@ -88,7 +92,8 @@ public class ParseContextIntegrationTest {
     Assert.assertSame(schema, result);
   }
 
-  // combinazione (schema = named, presence = same name same schema)
+  // TP03: combinazione (schema = named, presence = same name same schema,
+  // validator = valid)
   @Test
   public void TestPutNamedSchemaIfExistingSame() {
 
@@ -104,7 +109,8 @@ public class ParseContextIntegrationTest {
 
   }
 
-  // combinazione (schema = named, presence = same name different schema)
+  // TP04: combinazione (schema = named, presence = same name different schema,
+  // validator = valid)
   @Test
   public void TestPutNamedSchemaIfExistingDifferent() {
 
@@ -118,20 +124,20 @@ public class ParseContextIntegrationTest {
     });
   }
 
+  // TP05: combinazione (schema = named, presence = -, validator = invalid)
   @Test
   public void TestPutInvalidName() {
 
-    Schema schema = Schema.createRecord("invalid", null, null, false, Collections.emptyList());
+    ParseContext strict = new ParseContext(NameValidator.STRICT_VALIDATOR);
+    Schema schema = Schema.createRecord("lunedì", null, null, false, Collections.emptyList());
 
-    // Visto che posso passare un validator arbitrario a ParseContext questo può
-    // decidere di non validare una stringa
-    // ritenuta valida durante l'istanziazione dello schema (createRecord fa già un
-    // controllo sul nome durante la
-    // creazione). L'unico metodo di ParseContext che usa validate() è put()
+    // valido per UTF_VALIDATOR ma non per STRICT_VALIDATOR
 
-    Assert.assertThrows(SchemaParseException.class, () -> ctx.put(schema));
+    Assert.assertThrows(SchemaParseException.class, () -> strict.put(schema));
   }
 
+  // TR01: combinazione (schema = known, resolved schemas = all, context =
+  // committed)
   @Test
   public void TestResolveKnown() {
 
@@ -153,6 +159,8 @@ public class ParseContextIntegrationTest {
     Assert.assertEquals(schema, resolved);
   }
 
+  // TR02: combinazione (schema = unknown, resolved schemas = all, context =
+  // committed)
   @Test
   public void TestResolveUnknown() {
 
@@ -172,6 +180,7 @@ public class ParseContextIntegrationTest {
     Assert.assertThrows(NullPointerException.class, () -> ctx.resolve(unresolved));
   }
 
+  // TR03: combinazione (schema = -, resolved schemas = -, context = uncommitted)
   @Test
   public void TestResolveNotFullyCommitted() {
 
@@ -186,6 +195,8 @@ public class ParseContextIntegrationTest {
     Assert.assertThrows(IllegalStateException.class, () -> ctx.resolve(unresolved));
   }
 
+  // TR04: combinazione (schema = -, resolved schema = not all, context =
+  // committed)
   @Test
   public void TestResolveNotAllResolved() {
     Schema unresolved = ctx.find("simple", "explicit");
