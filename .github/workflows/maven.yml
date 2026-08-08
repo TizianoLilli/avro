@@ -31,9 +31,9 @@ jobs:
 
       - name: Run custom tests
         run: mvn -pl lang/java/avro -am verify
-          -Dtest=customTests.manual.ParseContextBBTest 
+          -Dtest=customTests.manual.ParseContextBBTest,customTests.controlFlow.ParseContextCFTest 
           -Dit.test=customTests.manual.ParseContextTestIT 
           -DfailIfNoTests=false 
           -Dinvoker.skip=true 
           -Drat.skip=true
-
+          -Dmaven.build.cache.enabled=false
