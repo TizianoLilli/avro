@@ -13,7 +13,7 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Map;
 
-public class ParseContextIntegrationTest {
+public class ParseContextTestIT {
 
   private ParseContext ctx;
 

@@ -193,7 +193,7 @@
                  rather than the console. -->
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
             <failIfNoTests>false</failIfNoTests>
-            <argLine>-Xmx1000m</argLine>
+            <argLine>-Xmx1000m @{argLine}</argLine>
             <systemPropertyVariables>
 
               <!-- Using the related system properties to set the trusted classes/packages for all tests (in every module). -->

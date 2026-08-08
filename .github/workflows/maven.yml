@@ -30,5 +30,10 @@ jobs:
 
 
       - name: Run custom tests
-        run: mvn -B -Dtest=ParseContextUnitTest test
-             #mvn -B -Dtest="customTests.**.*" test
+        run: mvn -pl lang/java/avro -am verify
+          -Dtest=customTests.manual.ParseContextBBTest 
+          -Dit.test=customTests.manual.ParseContextTestIT 
+          -DfailIfNoTests=false 
+          -Dinvoker.skip=true 
+          -Drat.skip=true
+

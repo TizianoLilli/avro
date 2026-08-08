@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ParseContextUnitTest {
+public class ParseContextBBTest {
 
   private ParseContext ctx;
 
@@ -270,14 +270,10 @@ public class ParseContextUnitTest {
 
     Schema schema = Schema.createRecord("simple", null, "explicit", false, Collections.emptyList());
 
-    Mockito.when(validator.validate("simple")).thenReturn(ok);
-    Mockito.when(validator.validate("explicit")).thenReturn(ok);
+    // sto facendo test BB quindi non so internamente che nome avrà uno schema
+    // unresolved
 
-    Mockito.when(validator.validate("org")).thenReturn(ok);
-    Mockito.when(validator.validate("apache")).thenReturn(ok);
-    Mockito.when(validator.validate("avro")).thenReturn(ok);
-    Mockito.when(validator.validate("compiler")).thenReturn(ok);
-    Mockito.when(validator.validate("UnresolvedSchema_0")).thenReturn(ok);
+    Mockito.when(validator.validate(Mockito.anyString())).thenReturn(ok);
 
     Mockito.when(ok.isOK()).thenReturn(true);
 
@@ -304,14 +300,7 @@ public class ParseContextUnitTest {
 
     Schema schema = Schema.createRecord("simple", null, "explicit", false, Collections.emptyList());
 
-    Mockito.when(validator.validate("simple")).thenReturn(ok);
-    Mockito.when(validator.validate("explicit")).thenReturn(ok);
-
-    Mockito.when(validator.validate("org")).thenReturn(ok);
-    Mockito.when(validator.validate("apache")).thenReturn(ok);
-    Mockito.when(validator.validate("avro")).thenReturn(ok);
-    Mockito.when(validator.validate("compiler")).thenReturn(ok);
-    Mockito.when(validator.validate("UnresolvedSchema_0")).thenReturn(ok);
+    Mockito.when(validator.validate(Mockito.anyString())).thenReturn(ok);
 
     Mockito.when(ok.isOK()).thenReturn(true);
 
@@ -338,11 +327,7 @@ public class ParseContextUnitTest {
     Assert.assertTrue(SchemaResolver.isUnresolvedSchema(uncommitted));
     Assert.assertEquals("explicit.simple", SchemaResolver.getUnresolvedSchemaName(uncommitted));
 
-    Mockito.when(validator.validate("org")).thenReturn(ok);
-    Mockito.when(validator.validate("apache")).thenReturn(ok);
-    Mockito.when(validator.validate("avro")).thenReturn(ok);
-    Mockito.when(validator.validate("compiler")).thenReturn(ok);
-    Mockito.when(validator.validate("UnresolvedSchema_0")).thenReturn(ok);
+    Mockito.when(validator.validate(Mockito.anyString())).thenReturn(ok);
 
     Mockito.when(ok.isOK()).thenReturn(true);
 
@@ -366,11 +351,7 @@ public class ParseContextUnitTest {
     Assert.assertTrue(SchemaResolver.isUnresolvedSchema(unresolved));
     Assert.assertEquals("explicit.simple", SchemaResolver.getUnresolvedSchemaName(unresolved));
 
-    Mockito.when(validator.validate("org")).thenReturn(ok);
-    Mockito.when(validator.validate("apache")).thenReturn(ok);
-    Mockito.when(validator.validate("avro")).thenReturn(ok);
-    Mockito.when(validator.validate("compiler")).thenReturn(ok);
-    Mockito.when(validator.validate("UnresolvedSchema_0")).thenReturn(ok);
+    Mockito.when(validator.validate(Mockito.anyString())).thenReturn(ok);
 
     Mockito.when(ok.isOK()).thenReturn(true);
 

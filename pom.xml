@@ -45,8 +45,9 @@
     <main.basedir>${project.basedir}</main.basedir>
     <avro.distDir>dist</avro.distDir>
     <avro.docDir>build/avro-doc-${project.version}/api</avro.docDir>
+    <sonar.coverage.jacoco.xmlReportPaths>lang/java/avro/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 
-    <!-- plugin versions -->
+  <!-- plugin versions -->
     <apache-rat-plugin.version>0.18</apache-rat-plugin.version>
     <checkstyle-plugin.version>3.6.0</checkstyle-plugin.version>
     <checkstyle.version>13.3.0</checkstyle.version>
@@ -64,6 +65,7 @@
     <plugin-tools-javadoc.version>3.5.2</plugin-tools-javadoc.version>
     <spotless-maven-plugin.version>3.6.0</spotless-maven-plugin.version>
     <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
+    <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
 
     <!-- Pin output timestamp to make the Java build reproducible -->
     <project.build.outputTimestamp>1723122283</project.build.outputTimestamp>
@@ -172,9 +174,72 @@
           <artifactId>maven-toolchains-plugin</artifactId>
           <version>${maven-toolchains-plugin.version}</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>3.5.5</version>
+          <configuration>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <encoding>utf-8</encoding>
+            <runOrder>alphabetical</runOrder>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-report-plugin</artifactId>
+          <version>3.5.3</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-failsafe-plugin</artifactId>
+          <version>3.5.5</version>
+          <configuration>
+            <redirectTestOutputToFile>true</redirectTestOutputToFile>
+            <runOrder>alphabetical</runOrder>
+          </configuration>
+          <executions>
+            <execution>
+              <goals>
+                <goal>integration-test</goal>
+                <goal>verify</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.sonarsource.scanner.maven</groupId>
+          <artifactId>sonar-maven-plugin</artifactId>
+          <version>5.6.0.6792</version>
+        </plugin>
       </plugins>
     </pluginManagement>
     <plugins>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>prepare-jacoco-agent-unit</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <destFile>${project.build.directory}/jacoco-unit.exec</destFile>
+            </configuration>
+          </execution>
+          <execution>
+            <id>prepare-agent-it</id>
+            <goals>
+              <goal>prepare-agent-integration</goal>
+            </goals>
+            <configuration>
+              <destFile>${project.build.directory}/jacoco-it.exec</destFile>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
       <!-- By trying to activate all toolchains referenced in this project we get a fail-fast if any of them is missing. -->
       <plugin>
