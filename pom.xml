@@ -246,32 +246,6 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.pitest</groupId>
-        <artifactId>pitest-maven</artifactId>
-        <version>1.5.2</version>
-        <executions>
-          <execution>
-            <id>generate-pit-report</id>
-            <goals>
-              <goal>mutationCoverage</goal>
-            </goals>
-            <configuration>
-              <!-- no longer required -->
-              <targetClasses>
-                <param>org.apache.avro.ParseContext</param>
-              </targetClasses>
-              <!-- no longer required -->
-              <targetTests>
-                <param>customTests.manual.ParseContextBBTest</param>
-                <param>customTests.controlFlow.ParseContextCFTest</param>
-                <param>customTests.mutation.ParseContextMTTest</param>
-              </targetTests>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <!-- By trying to activate all toolchains referenced in this project we get a fail-fast if any of them is missing. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
