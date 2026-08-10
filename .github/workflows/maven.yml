@@ -26,6 +26,7 @@ jobs:
         run: mvn -B clean verify 
           -DskipTests
           -Drat.skip=true
+          -DfailIfNoTests=false
           -Dinvoker.skip=true
 
 

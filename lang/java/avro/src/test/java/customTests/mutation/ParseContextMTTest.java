@@ -33,6 +33,8 @@ public class ParseContextMTTest {
   @Test
   public void TestFindFullyQualifiedNameStartingWithDot() {
 
+    // verifico la ricerca di uno schema con name che inizia con ".";
+    // mi permette di riconoscere una mutazione in fullName() da < a <=
     Schema schema = ctx.find(".simple", "explicit");
 
     Assert.assertTrue(SchemaResolver.isUnresolvedSchema(schema));
@@ -49,6 +51,9 @@ public class ParseContextMTTest {
 
     ctx.put(schema);
 
+    // verifico che il nome venga validato solo una volta, e non due;
+    // con una mutazione di < in <= in requireValidFullName(),
+    // il nome viene validato anche come fosse un namespace
     Mockito.verify(validator, Mockito.times(1)).validate("simple");
   }
 
