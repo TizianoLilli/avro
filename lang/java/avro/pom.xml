@@ -179,9 +179,10 @@
               </targetClasses>
               <!-- no longer required -->
               <targetTests>
-                <param>customTests.manual.ParseContextBBTest</param>
+                <!--<param>customTests.manual.ParseContextBBTest</param>
                 <param>customTests.controlFlow.ParseContextCFTest</param>
-                <param>customTests.mutation.ParseContextMTTest</param>
+                <param>customTests.mutation.ParseContextMTTest</param>-->
+                <param>customTests.randoop.generated.RandoopRunTest</param>
               </targetTests>
             </configuration>
           </execution>

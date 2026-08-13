@@ -32,7 +32,7 @@ jobs:
 
       - name: Run custom tests
         run: mvn -pl lang/java/avro -am verify
-          -Dtest=customTests.manual.ParseContextBBTest,customTests.controlFlow.ParseContextCFTest 
+          -Dtest=customTests.manual.ParseContextBBTest,customTests.controlFlow.ParseContextCFTest,customTests.mutation.ParseContextMTTest,customTests.randoop.generated.RandoopRunTest 
           -Dit.test=customTests.manual.ParseContextTestIT 
           -DfailIfNoTests=false 
           -Dinvoker.skip=true 

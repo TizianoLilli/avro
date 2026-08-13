@@ -1,0 +1,4 @@
+org.apache.avro.ParseContext.find(java.lang.String,java.lang.String)
+org.apache.avro.ParseContext.put(org.apache.avro.Schema)
+org.apache.avro.ParseContext.resolve(org.apache.avro.Schema)
+org.apache.avro.ParseContext.commit()
