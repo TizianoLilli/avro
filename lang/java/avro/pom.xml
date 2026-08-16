@@ -182,7 +182,9 @@
                 <!--<param>customTests.manual.ParseContextBBTest</param>
                 <param>customTests.controlFlow.ParseContextCFTest</param>
                 <param>customTests.mutation.ParseContextMTTest</param>-->
-                <param>customTests.randoop.generated.RandoopRunTest</param>
+                <!--<param>customTests.randoop.generated.RandoopRunTest</param>-->
+                <!--<param>customTests.LLM.ParseContextLLMcotTest</param>-->
+                <param>customTests.LLM.ParseContextLLMzsTest</param>
               </targetTests>
             </configuration>
           </execution>
