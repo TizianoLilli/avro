@@ -184,7 +184,8 @@
                 <param>customTests.mutation.ParseContextMTTest</param>-->
                 <!--<param>customTests.randoop.generated.RandoopRunTest</param>-->
                 <!--<param>customTests.LLM.ParseContextLLMcotTest</param>-->
-                <param>customTests.LLM.ParseContextLLMzsTest</param>
+                <!--<param>customTests.LLM.ParseContextLLMzsTest</param>-->
+                <param>customTests.evosuite.ParseContextESTest</param>
               </targetTests>
             </configuration>
           </execution>
@@ -323,5 +324,11 @@
           <version>1</version>
           <scope>test</scope>
       </dependency>
+    <dependency>
+      <groupId>org.evosuite</groupId>
+      <artifactId>evosuite-standalone-runtime</artifactId>
+      <version>1.0.6</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
