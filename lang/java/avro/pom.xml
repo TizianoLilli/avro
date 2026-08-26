@@ -165,7 +165,7 @@
       <plugin>
         <groupId>org.pitest</groupId>
         <artifactId>pitest-maven</artifactId>
-        <version>1.5.2</version>
+        <version>1.25.7</version>
         <executions>
           <execution>
             <id>generate-pit-report</id>
@@ -175,7 +175,8 @@
             <configuration>
               <!-- no longer required -->
               <targetClasses>
-                <param>org.apache.avro.ParseContext</param>
+                <!--<param>org.apache.avro.ParseContext</param>-->
+                <param>org.apache.avro.Schema</param>
               </targetClasses>
               <!-- no longer required -->
               <targetTests>
@@ -185,7 +186,9 @@
                 <!--<param>customTests.randoop.generated.RandoopRunTest</param>-->
                 <!--<param>customTests.LLM.ParseContextLLMcotTest</param>-->
                 <!--<param>customTests.LLM.ParseContextLLMzsTest</param>-->
-                <param>customTests.evosuite.ParseContextESTest</param>
+                <!--<param>customTests.evosuite.ParseContextESTest</param>-->
+                <param>customTests.manual.SchemaBBTest</param>
+                <param>customTests.controlFlow.SchemaCFTest</param>
               </targetTests>
             </configuration>
           </execution>
