@@ -189,6 +189,7 @@
                 <!--<param>customTests.evosuite.ParseContextESTest</param>-->
                 <param>customTests.manual.SchemaBBTest</param>
                 <param>customTests.controlFlow.SchemaCFTest</param>
+                <param>customTests.mutation.SchemaMTTest</param>
               </targetTests>
             </configuration>
           </execution>
