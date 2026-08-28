@@ -1,0 +1,5 @@
+org.apache.avro.Schema.setFields(java.util.List)
+org.apache.avro.Schema.addAlias(java.lang.String,java.lang.String)
+org.apache.avro.Schema.addProp(java.lang.String,java.lang.String)
+org.apache.avro.Schema.toString()
+org.apache.avro.Schema.parse(java.lang.String)
