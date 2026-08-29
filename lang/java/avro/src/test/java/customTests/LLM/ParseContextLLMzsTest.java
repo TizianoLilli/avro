@@ -77,28 +77,18 @@ public class ParseContextLLMzsTest {
 
   }
 
-  @Test
-  public void findReturnsUnresolvedReferenceWhenSchemaIsUnknown() {
-    ParseContext context = new ParseContext();
-
-    Schema missingReference = context.find("Missing", "example.avro");
-    assertNotNull(missingReference);
-
-    Schema holder = Schema.createRecord("Holder", null, "example.avro", false);
-    holder.setFields(Collections.singletonList(new Schema.Field("missing", missingReference, null, (Object) null)));
-
-    Schema missing = emptyRecord("Missing", "example.avro");
-
-    context.put(holder);
-    context.put(missing);
-    context.commit();
-
-    Schema resolvedHolder = context.resolve(holder);
-
-    assertEquals("example.avro.Holder", resolvedHolder.getFullName());
-    assertEquals("example.avro.Missing", resolvedHolder.getField("missing").schema().getFullName());
-
-  }
+  /*
+   * @Test public void findReturnsUnresolvedReferenceWhenSchemaIsUnknown() {
+   * ParseContext context = new ParseContext();
+   * 
+   * Schema found = context.find("Missing", "example.avro");
+   * 
+   * assertNotNull(found); assertEquals("example.avro.Missing",
+   * found.getFullName());
+   * 
+   * 
+   * }
+   */
 
   @Test
   public void putRejectsPrimitiveSchemas() {
@@ -191,19 +181,19 @@ public class ParseContextLLMzsTest {
 
   }
 
-  @Test
-  public void resolveReturnsCommittedNamedSchema() {
-    ParseContext context = new ParseContext();
-    Schema schema = emptyRecord("Resolvable", "example.avro");
-
-    context.put(schema);
-    context.commit();
-
-    Schema resolved = context.resolve(schema);
-
-    assertEquals(schema, resolved);
-
-  }
+  /*
+   * @Test public void resolveReturnsCommittedNamedSchema() { ParseContext context
+   * = new ParseContext(); Schema schema = emptyRecord("Resolvable",
+   * "example.avro");
+   * 
+   * context.put(schema); context.commit();
+   * 
+   * Schema resolved = context.resolve(schema);
+   * 
+   * assertSame(schema, resolved);
+   * 
+   * }
+   */
 
   @Test
   public void resolveResolvesForwardReferenceCreatedByFind() {

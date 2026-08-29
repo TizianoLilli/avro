@@ -190,7 +190,9 @@
                 <!--<param>customTests.manual.SchemaBBTest</param>
                 <param>customTests.controlFlow.SchemaCFTest</param>
                 <param>customTests.mutation.SchemaMTTest</param>-->
-                <param>customTests.randoop.generated.SchemaRandoopRunTest</param>
+                <!--<param>customTests.randoop.generated.SchemaRandoopRunTest</param>-->
+                <param>org.apache.avro.SchemaESTest</param>
+                <!--<param>customTests.LLM.SchemaLLMzsTest</param>-->
               </targetTests>
             </configuration>
           </execution>
