@@ -1,10 +1,11 @@
 package customTests.manual;
 
-import org.apache.avro.SchemaParseException;
+import org.apache.avro.AvroRuntimeException;
 import org.apache.avro.AvroTypeException;
-import org.apache.avro.NameValidator;
+import org.apache.avro.SchemaParseException;
 import org.apache.avro.ParseContext;
 import org.apache.avro.Schema;
+import org.apache.avro.NameValidator;
 import org.apache.avro.util.SchemaResolver;
 import org.junit.Assert;
 import org.junit.Before;
@@ -171,6 +172,20 @@ public class ParseContextBBTest {
     Assert.assertTrue(SchemaResolver.isUnresolvedSchema(schema));
     Assert.assertEquals(".", SchemaResolver.getUnresolvedSchemaName(schema));
 
+  }
+
+  // TF11: combinazione (name = null, namespace = "", schema presence = -)
+  @Test
+  public void TestFindNullName() {
+    // sto invocando String.lastIndexOf(int) su un oggetto nullo
+    Assert.assertThrows(NullPointerException.class, () -> ctx.find(null, ""));
+  }
+
+  // TF12: combinazione (name = null, namespace = null, schema presence = -)
+  @Test
+  public void TestFindNullNameAndNamespace() {
+    // non è possibile settare un unresolved name a null
+    Assert.assertThrows(AvroRuntimeException.class, () -> ctx.find(null, null));
   }
 
   // TP01: combinazione (schema = unnamed, presence = -, validator = -)

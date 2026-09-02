@@ -41,7 +41,6 @@ import java.io.StringReader;
 import java.net.URI;
 import java.nio.file.FileVisitResult;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,17 +49,10 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 import java.util.Vector;
-import org.apache.avro.LogicalType;
-import org.apache.avro.NameValidator;
-import org.apache.avro.ParseContext;
-import org.apache.avro.Protocol;
-import org.apache.avro.Schema;
-import org.evosuite.runtime.EvoRunner;
-import org.evosuite.runtime.EvoRunnerParameters;
+
 import org.evosuite.runtime.mock.java.io.MockFile;
 import org.evosuite.runtime.mock.java.net.MockURI;
 import org.evosuite.runtime.testdata.FileSystemHandling;
-import org.junit.runner.RunWith;
 
 public class SchemaESTest {
 
@@ -364,7 +356,7 @@ public class SchemaESTest {
    * PushbackInputStream((InputStream) null, 2147483645); try {
    * Schema.parse((InputStream) pushbackInputStream0);
    * fail("Expecting exception: IOException");
-   * 
+   *
    * } catch(IOException e) { // // Stream closed //
    * verifyException("java.io.PushbackInputStream", e); } }
    */
@@ -407,7 +399,7 @@ public class SchemaESTest {
    * ParseContext(); // Undeclared exception! try { Schema.parse((JsonNode)
    * objectNode1, parseContext0, (String) null);
    * fail("Expecting exception: RuntimeException");
-   * 
+   *
    * } catch(RuntimeException e) { // //
    * com.fasterxml.jackson.databind.JsonMappingException: [no message for
    * java.lang.NullPointerException] //
@@ -2077,7 +2069,7 @@ public class SchemaESTest {
    * FileVisitResult>>(1861); // Undeclared exception! try {
    * schema_LockableArrayList0.remove(2);
    * fail("Expecting exception: IndexOutOfBoundsException");
-   * 
+   *
    * } catch(IndexOutOfBoundsException e) { // // Index: 2, Size: 0 //
    * verifyException("java.util.ArrayList", e); } }
    */

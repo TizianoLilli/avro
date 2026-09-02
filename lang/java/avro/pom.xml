@@ -146,6 +146,10 @@
             <configuration>
               <dataFile>${project.build.directory}/jacoco-unit.exec</dataFile>
               <outputDirectory>${project.reporting.outputDirectory}/jacoco-unit</outputDirectory>
+              <includes>
+                <!--Necessario quando sono presenti inner classes, come nelle versioni rifattorizzate di ParseContext-->
+                <!--<include>org/apache/avro/ParseContext*.class</include>-->
+              </includes>
             </configuration>
           </execution>
           <execution>
@@ -175,7 +179,7 @@
             <configuration>
               <!-- no longer required -->
               <targetClasses>
-                <!--<param>org.apache.avro.ParseContext</param>-->
+                <!--<param>org.apache.avro.ParseContext*</param>-->
                 <param>org.apache.avro.Schema</param>
               </targetClasses>
               <!-- no longer required -->
@@ -191,8 +195,10 @@
                 <param>customTests.controlFlow.SchemaCFTest</param>
                 <param>customTests.mutation.SchemaMTTest</param>-->
                 <!--<param>customTests.randoop.generated.SchemaRandoopRunTest</param>-->
-                <param>org.apache.avro.SchemaESTest</param>
-                <!--<param>customTests.LLM.SchemaLLMzsTest</param>-->
+                <!--<param>org.apache.avro.SchemaESTest</param>-->
+                <param>customTests.LLM.SchemaLLMzsTest</param>
+                <!--<param>customTests.refactorized.SchemaC_XRunTest</param>-->
+                <!--<param>customTests.refactorized.ParseContextC_XRunTest</param>-->
               </targetTests>
             </configuration>
           </execution>
